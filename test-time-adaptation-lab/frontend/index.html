@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090e1d">
+  <title>TTA Lab | Test-Time Adaptation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">T</div><div><b>TTA LAB</b><small>RESEARCH CONSOLE</small></div></div>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <button class="nav-item active" data-target="overview"><span>◫</span> Overview</button>
+      <button class="nav-item" data-target="experiment"><span>⌁</span> Run experiment</button>
+      <button class="nav-item" data-target="predict"><span>▧</span> Digit prediction</button>
+      <button class="nav-item" data-target="training"><span>⚙</span> Model training</button>
+      <button class="nav-item" data-target="methods"><span>◉</span> TTA methods</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="status-dot"></div><span>Local research environment</span><small>v1.0.0</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar"><div><div class="eyebrow">NEURAL NETWORKS / DEEP LEARNING</div><h1 id="pageTitle">Research overview</h1></div>
+      <div class="top-actions"><span class="cpu-pill"><i></i> CPU MODE</span><button class="icon-btn" id="refreshBtn" title="Refresh overview">↻</button></div>
+    </header>
+
+    <section id="overview" class="page active">
+      <div class="hero">
+        <div><div class="tag">CASE STUDY · TENT IMPLEMENTATION</div><h2>Adapt to the<br><em>unseen.</em></h2>
+          <p>Explore how a pretrained neural network can respond to distribution shifts using unlabelled target data — without retraining on target labels.</p>
+          <button class="primary-btn" data-go="experiment">Launch an experiment <span>↗</span></button>
+        </div>
+        <div class="hero-visual"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="network">
+          <div class="nodes n1"></div><div class="nodes n2"></div><div class="nodes n3"></div><div class="nodes n4"></div>
+          <div class="netline l1"></div><div class="netline l2"></div><div class="netline l3"></div><div class="netline l4"></div>
+          <div class="netline l5"></div><div class="netline l6"></div><div class="netline l7"></div><div class="netline l8"></div>
+          <div class="net-caption">INPUT SHIFT <span>→</span> ADAPTATION <span>→</span> PREDICTION</div></div></div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-card"><span>DATASET</span><strong id="datasetCount">1,797</strong><small>handwritten digit images</small></div>
+        <div class="metric-card"><span>MODEL PARAMETERS</span><strong id="paramCount">24,346</strong><small>TinyCNN · trainable at source</small></div>
+        <div class="metric-card"><span>ADAPTABLE WEIGHTS</span><strong id="adaptCount">0.92%</strong><small>BatchNorm γ and β only</small></div>
+        <div class="metric-card"><span>CLASSES</span><strong>10</strong><small>digits from 0 to 9</small></div>
+      </div>
+      <div class="section-heading"><div><div class="eyebrow">EXPERIMENTAL PIPELINE</div><h3>From clean source to shifted target</h3></div><span class="muted">01 — 04</span></div>
+      <div class="pipeline">
+        <div class="pipe-card"><div class="pipe-num">01</div><div class="pipe-icon blue">▦</div><b>Source data</b><p>1,347 clean labelled training images.</p></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card"><div class="pipe-num">02</div><div class="pipe-icon purple">⌁</div><b>Distribution shift</b><p>Gaussian noise is added to held-out images.</p></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card"><div class="pipe-num">03</div><div class="pipe-icon cyan">⟳</div><b>TENT adaptation</b><p>Entropy minimisation on unlabelled batches.</p></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card"><div class="pipe-num">04</div><div class="pipe-icon green">✓</div><b>Evaluation</b><p>Measure predictions after adaptation.</p></div>
+      </div>
+      <div class="two-col">
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">SOURCE MODEL</div><h3>Training history</h3></div><span class="mini-chip">8 epochs</span></div><canvas id="trainingChart" height="150"></canvas></div>
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">RESEARCH QUESTION</div><h3>What are we measuring?</h3></div></div>
+          <p class="question">How much accuracy lost to Gaussian-noise shift can be recovered by adapting a pretrained CNN at test time, using only unlabelled noisy inputs?</p>
+          <div class="note-line"><span class="note-icon">i</span><span>Target labels are withheld during adaptation and used only after predictions to calculate evaluation metrics.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experiment" class="page">
+      <div class="intro-row"><div><div class="eyebrow">CONTROLLED EVALUATION</div><h2>Experiment workspace</h2><p>Change the target corruption and adaptation settings, then compare model behaviour.</p></div><span class="mini-chip">REPRODUCIBLE PIPELINE</span></div>
+      <div class="experiment-layout">
+        <div class="panel config-panel"><div class="panel-head"><div><div class="eyebrow">CONFIGURATION</div><h3>Target domain settings</h3></div><span class="setting-icon">⚙</span></div>
+          <label>Gaussian noise σ <output id="sigmaOut">0.30</output></label><input id="sigma" type="range" min="0" max="0.8" step="0.05" value="0.30">
+          <div class="range-labels"><span>Clean · 0.00</span><span>Severe · 0.80</span></div>
+          <label>Target batch size</label><select id="batchSize"><option>32</option><option>64</option><option selected>128</option><option>256</option><option>450</option></select>
+          <label>TENT learning rate</label><select id="tentLr"><option value="0.00001">0.00001</option><option value="0.00005">0.00005</option><option value="0.0001" selected>0.0001 (report)</option><option value="0.0005">0.0005</option><option value="0.001">0.001</option></select>
+          <label>Noise random seed</label><input id="noiseSeed" type="number" value="43" min="0" max="999999">
+          <label class="check-row"><input type="checkbox" id="confidenceGate"><span>Enable confidence gate <small>Experimental safeguard · entropy ≤ 1.5</small></span></label>
+          <button class="primary-btn full" id="runBtn">Run TTA evaluation <span>→</span></button>
+          <p class="tiny muted">The original report configuration is preselected. The confidence gate is an optional extension.</p>
+        </div>
+        <div class="panel result-panel"><div class="panel-head"><div><div class="eyebrow">LIVE RESULTS</div><h3>Model performance</h3></div><span id="runStatus" class="status-label">AWAITING RUN</span></div>
+          <div id="emptyState" class="empty-state"><div class="empty-icon">⌁</div><b>No experiment executed yet</b><p>Run the evaluation to generate metrics, comparison charts and diagnostics.</p></div>
+          <div id="resultContent" class="hidden">
+            <div class="result-highlight"><div><span>TENT IMPROVEMENT</span><strong id="improvement">+0.00 pp</strong></div><div><span>ACCURACY RECOVERED</span><strong id="recovered">0%</strong></div><div><span>ADAPTATION TIME</span><strong id="adaptTime">0.00s</strong></div></div>
+            <canvas id="accuracyChart" height="180"></canvas>
+            <div class="table-wrap"><table><thead><tr><th>METHOD</th><th>ACCURACY</th><th>ERROR</th><th>ENTROPY</th></tr></thead><tbody id="resultsRows"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+      <div class="two-col lower-results">
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">ADAPTATION DYNAMICS</div><h3>Entropy per target batch</h3></div></div><canvas id="entropyChart" height="150"></canvas><p class="tiny muted">Entropy is measured before each batch's own parameter update.</p></div>
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">CLASSIFICATION DIAGNOSTICS</div><h3>Confusion matrix · TENT</h3></div></div><div id="confusionMatrix" class="confusion"></div></div>
+      </div>
+      <div class="export-row"><span class="muted tiny">Export the latest measured results for your report.</span><button class="secondary-btn" id="exportBtn">↓ Download CSV</button></div>
+    </section>
+
+    <section id="predict" class="page">
+      <div class="intro-row"><div><div class="eyebrow">SINGLE IMAGE INFERENCE</div><h2>Digit prediction</h2><p>Upload a handwritten digit to see the source model's prediction and probability distribution.</p></div></div>
+      <div class="predict-layout">
+        <div class="panel upload-panel"><div class="eyebrow">INPUT IMAGE</div><h3>Upload a digit sample</h3>
+          <label class="dropzone" id="dropzone"><input type="file" id="imageFile" accept="image/png,image/jpeg,image/webp,image/bmp" hidden><div class="upload-symbol">＋</div><b>Drop an image here</b><span>or click to browse · PNG, JPG, WEBP · max 8 MB</span><img id="preview" class="hidden" alt="Selected digit preview"></label>
+          <button class="primary-btn full" id="predictBtn" disabled>Classify image <span>→</span></button><p class="tiny muted">For best results, use a single centred digit with a dark stroke on a light background (or vice versa).</p>
+        </div>
+        <div class="panel prediction-panel"><div class="eyebrow">MODEL OUTPUT</div><h3>Prediction analysis</h3><div id="predictionEmpty" class="empty-state compact"><div class="empty-icon">0–9</div><b>Awaiting an image</b><p>Your prediction and class probabilities will appear here.</p></div>
+          <div id="predictionResult" class="hidden"><div class="pred-number" id="predNumber">7</div><div class="pred-meta"><span>Predicted digit</span><b id="predConfidence">98.2% confidence</b></div><div class="prob-list" id="probList"></div><div class="note-line"><span class="note-icon">i</span><span>Prediction uses the trained source model. This single-image endpoint does not run TENT adaptation.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="training" class="page">
+      <div class="intro-row"><div><div class="eyebrow">SOURCE MODEL MANAGEMENT</div><h2>Model training</h2><p>Retrain the TinyCNN on the clean source split. This resets the source checkpoint for subsequent experiments.</p></div></div>
+      <div class="training-layout">
+        <div class="panel config-panel"><div class="eyebrow">TRAINING CONFIGURATION</div><h3>Optimisation settings</h3>
+          <label>Epochs</label><input id="epochs" type="number" value="8" min="1" max="50">
+          <label>Learning rate</label><input id="trainLr" type="number" value="0.003" step="0.001" min="0.00001" max="0.1">
+          <label>Training batch size</label><select id="trainBatch"><option>32</option><option>64</option><option selected>128</option><option>256</option></select>
+          <label>Random seed</label><input id="trainSeed" type="number" value="42">
+          <button class="primary-btn full" id="trainBtn">Train source model <span>→</span></button>
+          <p class="tiny muted">Training uses labelled clean source images and cross-entropy loss.</p>
+        </div>
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">TRAINING MONITOR</div><h3>Loss and accuracy</h3></div><span id="trainStatus" class="status-label">MODEL READY</span></div><canvas id="lossChart" height="230"></canvas><div id="trainSummary" class="note-line"><span class="note-icon">✓</span><span>Default checkpoint will be trained automatically on first launch.</span></div></div>
+      </div>
+    </section>
+
+    <section id="methods" class="page">
+      <div class="intro-row"><div><div class="eyebrow">METHOD LANDSCAPE</div><h2>Test-time adaptation methods</h2><p>TTA is the umbrella concept. TENT is the method implemented and measured in this case study.</p></div></div>
+      <div class="method-grid" id="methodGrid"></div>
+      <div class="panel"><div class="eyebrow">IMPLEMENTATION SCOPE</div><h3>What this repository actually runs</h3><p class="muted">The interactive experiment implements source-only inference, a BatchNorm-statistics-only ablation, and TENT. Test-Time Training and test-time prompt tuning are included as explanatory reference methods only; they are not implemented in this case study.</p></div>
+    </section>
+    <footer><span>TTA LAB · EDUCATIONAL RESEARCH DEMONSTRATOR</span><span>Built with PyTorch + FastAPI</span></footer>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<script src="/app.js"></script>
+</body></html>
